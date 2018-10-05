@@ -59,6 +59,7 @@
     <script src="../js/jquery.min.js"></script>
 
     <script>
+        //这是反向代理跨域方法
         //检测用户是否登陆上
         //没有登陆跳转 login.html
         $.ajax({
@@ -72,6 +73,23 @@
                 }
             }
         })
+
+        //这是 CORS方法  跨域的操作
+        // $.ajax({
+        //     //会有跨域问题
+        //     url: 'http://localhost:3000/user/queryUserMessage',
+        //     type: 'get',
+        //     xhrFields: {
+        //         //让浏览器将 cookie 传到后端
+        //         withCredentials: true
+        //     },
+        //     success: function(info) {
+        //         console.log(info);
+        //         if (info.error) {
+        //             location.href = './login.html';
+        //         }
+        //     }
+        // })
     </script>
 
 </body>

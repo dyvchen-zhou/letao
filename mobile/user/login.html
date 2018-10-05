@@ -47,7 +47,8 @@
     <script src="../js/jquery.min.js"></script>
 
     <script>
-        //当用户点击登陆按钮时发送Ajax请求
+        // //反向代理
+        //  //当用户点击登陆按钮时发送Ajax请求
         $('.btn_login').on('click', function() {
             $.ajax({
                 url: '/api/user/login',
@@ -65,6 +66,31 @@
                 }
             })
         })
+
+
+        //这是 CORS方法  跨域的操作
+        //当用户点击登陆按钮时发送Ajax请求
+        // $('.btn_login').on('click', function() {
+        //     $.ajax({
+        //         url: 'http://localhost:3000/user/login',
+        //         type: 'post',
+        //         xhrFields: {
+        //             //让浏览器将 cookie 传到后端
+        //             withCredentials: true
+        //         },
+        //         data: {
+        //             "username": $('input[name="name"]').val(),
+        //             "password": $('input[name="pass"]').val()
+        //         },
+        //         success: function(info) {
+        //             console.log(info);
+        //             if (info.success) {
+        //                 location.href = './index.html';
+        //             }
+
+        //         }
+        //     })
+        // })
     </script>
 </body>
 
