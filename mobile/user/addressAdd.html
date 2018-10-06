@@ -24,8 +24,18 @@
         <div class="cz_container">
             <form action="">
                 <div class="form_box">
-                    <div class="mui-input-row">
-                        <input name="address" type="text" placeholder="省市县">
+
+                    <div class="region">
+                        <!-- 省市县三级联动 -->
+                        <select name="" id="p" data-id="">
+                            <option value="">请选择省份</option>
+                        </select>
+                        <select name="" id="c" data-id="">
+                            <option value="">请选择城市</option>
+                        </select>
+                        <select name="" id="d" data-id="">
+                            <option value="">请选择县/区</option>
+                        </select>
                     </div>
                     <div class="mui-input-row">
                         <input name="recipients" type="text" placeholder="收货人">
@@ -50,13 +60,29 @@
     </div>
     <script src="../res/mui/js/mui.min.js"></script>
     <script src="../js/jquery.min.js"></script>
+    <script src="../js/jquery.region.js"></script>
 
     <script>
+        //通过jquery来实现省市县三级联动
+        $('.region').region({
+            url: '../js/region.json'
+        });
+
+
+
         //由于没有初始地址 ，需要添加地址
         //提供添加地址页面
         $('form').on('submit', function() {
             //获取用户填写的信息
             var data = $(this).serialize();
+
+
+            //获取下拉菜单省市县的三级联动信息
+            var ptext = $('#p option:selected').text();
+            var ctext = $('#p option:selected').text();
+            var dtext = $('#p option:selected').text();
+            //我们将省市县拼接 然后发送
+            data += '&address=' + ptext + ctext + dtext;
             //发送ajax请求
             $.ajax({
                 url: '/api/address/addAddress',
