@@ -31,9 +31,9 @@
         </div>
     </div>
     <div class="p_option">
-        <a href="#" class="btn_cart fa fa-shopping-cart"></a>
-        <a href="#" class="btn_addCart">加入购物车</a>
-        <a href="#" class="btn_pay">立即购买</a>
+        <a href="javascript:;" class="btn_cart fa fa-shopping-cart"></a>
+        <a href="javascript:;" class="btn_addCart">加入购物车</a>
+        <a href="javascript:;" class="btn_pay">立即购买</a>
     </div>
     <!-- 自定义模板引擎 -->
     <script type="text/html" id="tpl">
@@ -102,10 +102,10 @@
         var qs = {};
         for (var i = 0; i < arr.length; i++) {
             var tmp = arr[i].split('=');
-            console.log(tmp);
+            // console.log(tmp);
             qs[tmp[0]] = tmp[1];
         }
-        console.log(qs.pid);
+        // console.log(qs.pid);
 
 
         //2 发送到服务端查询信息
@@ -139,28 +139,34 @@
                     deceleration: 0.0006, //阻尼系数,系数越小滑动越灵敏
                     bounce: true, //是否启用回弹
                 });
-                mui.init({
-                    pullRefresh: {
-                        container: '.mui-scroll-wrapper',
-                        down: {
-                            callback: function() {
-                                setTimeout(function() {
-                                    mui('.mui-scroll-wrapper').pullRefresh().endPulldownToRefresh(); //refresh completed
-                                }, 1000);
-                            }
-                        }
-                    }
-                });
 
             }
 
         })
 
 
-        mui(function() {
+        //加入购物车
+        $('.btn_addCart').on('click', function() {
+            //1 获取参数 （dom）
+            //2 发送请求
+            $.ajax({
+                url: '/api/cart/addCart',
+                type: 'post',
+                data: {
+                    productId: 1,
+                    num: 2,
+                    size: 30
+                },
+                success: function(info) {
+                    console.log(info);
 
-
-        });
+                    if (info.error) {
+                        alert('请先登录！');
+                        location.href = './user/login.html?url=' + location.href;
+                    }
+                }
+            })
+        })
     </script>
 
 </body>

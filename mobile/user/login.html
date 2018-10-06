@@ -47,6 +47,19 @@
     <script src="../js/jquery.min.js"></script>
 
     <script>
+        //通过正则表达式来获取地址上的参数
+        var search = location.search.slice(1);
+        //正则表达式
+        var reg = /url=(.+)/;
+
+        var match = reg.exec(search);
+
+        // console.log(match[1]);
+
+        //获取地址的url参数
+        var url = match && match[1];
+
+
         // //反向代理
         //  //当用户点击登陆按钮时发送Ajax请求
         $('.btn_login').on('click', function() {
@@ -60,7 +73,18 @@
                 success: function(info) {
                     console.log(info);
                     if (info.success) {
-                        location.href = './index.html';
+
+                        //如果地址上有url参数
+                        //那么我们跳转到url对应的参数
+                        //相反我们跳转到用户参数
+                        if (url) {
+                            location.href = url;
+                        } else {
+                            location.href = './index.html';
+                        }
+                        // if (url) return location.href = url;
+                        // location.href = './index.html'
+
                     }
 
                 }
