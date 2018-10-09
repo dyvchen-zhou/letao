@@ -79,8 +79,8 @@
 
             //获取下拉菜单省市县的三级联动信息
             var ptext = $('#p option:selected').text();
-            var ctext = $('#p option:selected').text();
-            var dtext = $('#p option:selected').text();
+            var ctext = $('#c option:selected').text();
+            var dtext = $('#d option:selected').text();
             //我们将省市县拼接 然后发送
             data += '&address=' + ptext + ctext + dtext;
             //发送ajax请求

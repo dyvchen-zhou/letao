@@ -13,6 +13,11 @@
     <link rel="stylesheet" href="res/fontAwesome/css/font-awesome.min.css" />
     <link rel="stylesheet" href="css/common.css" />
     <link rel="stylesheet" href="css/product.css" />
+    <style>
+        .btn_active {
+            background-color: palevioletred;
+        }
+    </style>
 </head>
 
 <body>
@@ -67,18 +72,12 @@
             <del class="original">¥{{oldPrice}}</del>
         </div>
         <div class="p_size">
-            尺码：
-            <span class="btn_size">38</span>
-            <span class="btn_size">39</span>
-            <span class="btn_size">40</span>
-            <span class="btn_size">41</span>
-            <span class="btn_size">43</span>
-            <span class="btn_size">44</span>
-            <span class="btn_size">45</span>
+            尺码： {{each size as val}}
+            <span class="btn_size">{{val}}</span> {{/each}}
         </div>
         <div class="p_number">
             数量：
-            <span class="jian">-</span><input type="tel" /><span class="jia">+</span> 剩余：0 件
+            <span class="jian btn_num">-</span><input type="tel" class="input_num" value='1' /><span class="jia btn_num">+</span> 剩余：<span class="p_num">{{num}}</span> 件
         </div>
         <div class="p_detail">
             <img data-lazyload="images/detail.jpg" alt="" />
@@ -122,6 +121,9 @@
                 //处理数据
                 info.discount = (info.price / info.oldPrice * 10).toFixed(1);
 
+                //将数据拆分成数组
+                info.size = info.size.split('-');
+
                 //调用模板引擎
                 var html = template('tpl', info);
                 $('#detail').html(html);
@@ -145,25 +147,95 @@
         })
 
 
+        // //加入购物车
+        // $('.btn_addCart').on('click', function() {
+        //     //1 获取参数 （dom）
+        //     //2 发送请求
+        //     $.ajax({
+        //         url: '/api/cart/addCart',
+        //         type: 'post',
+        //         data: {
+        //             productId: 1,
+        //             num: 2,
+        //             size: 30
+        //         },
+        //         success: function(info) {
+        //             console.log(info);
+
+        //             if (info.error) {
+        //                 mui.alert('请先登录');
+        //                 location.href = './user/login.html?url=' + location.href;
+        //             }
+        //         }
+        //     })
+        // })
+
+
+        //选择商品的尺码 需要用事件委托
+        $('#detail').on('click', '.btn_size', function() {
+            $(this).addClass('btn_active').siblings().removeClass('btn_active');
+        })
+
+        //修改商品数量
+        $('#detail').on('click', '.btn_num', function() {
+            // 获取input标签
+            var input = $(this).siblings('input');
+            //获取的值从字符串转化成数组
+            var n = input.val() - 0;
+
+            //判断加减
+            if ($(this).is('.jia')) {
+                //判断临界值
+                if (n >= $('.p_num').text()) return mui.alert('数量不能超过库存');
+                return input.val(++n);
+            }
+            if (n <= 1) return mui.alert('数量不能少于一件');
+            return input.val(--n);
+        })
+
+
         //加入购物车
         $('.btn_addCart').on('click', function() {
-            //1 获取参数 （dom）
-            //2 发送请求
+            //获取参数 DOM方法
+            var num = $('.input_num').val() - 0;
+            var size = $('.btn_active').text();
+
+            //验证数据是否有空的
+            if (!size) return mui.alert('请选择一个型号');
+            if (num < 1) return mui.alert('请输入正确的数量');
+            if (num > $('.p_num').text()) return mui.alert('请输入正确的数量');
+
+            //发送Ajax请求
             $.ajax({
                 url: '/api/cart/addCart',
                 type: 'post',
                 data: {
-                    productId: 1,
-                    num: 2,
-                    size: 30
+                    productId: qs.pid,
+                    num: num,
+                    size: size
                 },
                 success: function(info) {
                     console.log(info);
 
                     if (info.error) {
-                        alert('请先登录！');
-                        location.href = './user/login.html?url=' + location.href;
+                        mui.alert('请先登录',
+                            '提示',
+                            '确定',
+                            function() {
+                                location.href = './user/login.html?url=' + location.href;
+                            }
+                        )
+                        return;
                     }
+                    // 成功
+                    mui.alert(
+                        '添加购物车成功!',
+                        '提示',
+                        '确定',
+                        function() {
+                            location.href = './cart.html';
+                        }
+                    )
                 }
             })
         })
