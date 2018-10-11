@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>乐淘 - 后台管理</title>
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="./assets/nprogress/nprogress.css">
     <link rel="stylesheet" href="./css/index.css">
 </head>
+
 <body>
     <!-- 登录 -->
     <div class="login">
@@ -20,20 +22,64 @@
                     <span class="input-group-addon">
                         <i class="fa fa-user"></i>
                     </span>
-                    <input type="text" class="form-control" placeholder="用户名">
+                    <input type="text" name="username" class="form-control" placeholder="用户名">
                 </div>
                 <div class="input-group input-group-lg">
                     <span class="input-group-addon">
                         <i class="fa fa-key"></i>
                     </span>
-                    <input type="password" class="form-control" placeholder="密码">
+                    <input type="password" name="password" class="form-control" placeholder="密码">
                 </div>
                 <button type="submit" class="btn btn-lg btn-primary btn-block">登 录</button>
             </form>
         </div>
     </div>
-    
+
     <script src="./assets/jquery/jquery.min.js"></script>
     <script src="./assets/bootstrap/js/bootstrap.min.js"></script>
+
+
+
+    <script>
+        // 获取地址上的 url 参数
+        var search = location.search.slice(1);
+
+        // 正则表达式
+        var reg = /url=(.+)/;
+
+        var match = reg.exec(search);
+
+        // console.log(match);
+
+        var url = match && match[1];
+
+        // 默认跳转地址
+        url = url || './index.html';
+
+        // 获取表单的用户信息进行提交
+        $('form').on('submit', function() {
+
+            // 获取表单数据
+            var data = $(this).serialize();
+
+            // 发送请求
+            $.ajax({
+                url: '/api/employee/employeeLogin',
+                type: 'post',
+                data: data,
+                success: function(info) {
+                    console.log(info);
+                    console.log(url);
+
+                    // 登录成功跳转到“合适”的页面
+                    location.href = url;
+                }
+            })
+
+            // 阻止表单的默认提交
+            return false;
+        })
+    </script>
 </body>
+
 </html>

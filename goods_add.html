@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>乐淘 - 后台管理</title>
@@ -8,8 +9,9 @@
     <link rel="stylesheet" href="./assets/nprogress/nprogress.css">
     <link rel="stylesheet" href="./css/index.css">
 </head>
+
 <body>
-    
+
     <!-- 侧边栏 -->
     <div class="aside">
         <!-- 个人资料 -->
@@ -25,20 +27,17 @@
             <ul class="list-unstyled">
                 <li>
                     <a href="./index.html">
-                        <i class="fa fa-dashboard"></i>
-                        仪表盘
+                        <i class="fa fa-dashboard"></i> 仪表盘
                     </a>
                 </li>
                 <li>
                     <a href="./user_list.html">
-                        <i class="fa fa-group"></i>
-                        用户管理
+                        <i class="fa fa-group"></i> 用户管理
                     </a>
                 </li>
                 <li>
                     <a href="javascript:;">
-                        <i class="fa fa-indent"></i>
-                        分类管理
+                        <i class="fa fa-indent"></i> 分类管理
                         <i class="arrow fa fa-angle-right"></i>
                     </a>
                     <ul class="list-unstyled">
@@ -56,8 +55,7 @@
                 </li>
                 <li>
                     <a href="./goods_list.html">
-                        <i class="fa fa-cubes pull-left"></i>
-                        商品管理
+                        <i class="fa fa-cubes pull-left"></i> 商品管理
                     </a>
                 </li>
             </ul>
@@ -77,14 +75,12 @@
                     <ul class="nav navbar-nav navbar-right">
                         <li>
                             <a href="./settings.html">
-                                <i class="fa fa-user"></i>
-                                个人中心
+                                <i class="fa fa-user"></i> 个人中心
                             </a>
                         </li>
                         <li>
                             <a href="javascript:;">
-                                <i class="fa fa-sign-out"></i>
-                                退出
+                                <i class="fa fa-sign-out"></i> 退出
                             </a>
                         </li>
                         <li>
@@ -93,7 +89,7 @@
                             </a>
                         </li>
                     </ul>
-                </nav>          
+                </nav>
             </div>
             <!-- 讲师资料 -->
             <div class="body">
@@ -105,8 +101,9 @@
                                 <img src="./images/default.png">
                                 <input type="file" id="upfile">
                                 <div class="cover">
-                                    <i class="fa fa-upload"></i>                  
+                                    <i class="fa fa-upload"></i>
                                 </div>
+                                <input type="hidden" class="thumb">
                             </div>
                         </div>
                         <div class="form-group">
@@ -119,9 +116,7 @@
                             <label for="" class="col-xs-3 control-label">所属品牌</label>
                             <div class="col-xs-5">
                                 <select name="" class="form-control input-sm">
-                                    <option value="">河北省</option>
-                                    <option value="">山东省</option>
-                                    <option value="">北京市</option>
+                                   
                                 </select>
                             </div>
                         </div>
@@ -151,7 +146,7 @@
                         </div>
                         <div class="form-group">
                             <div class="col-xs-8">
-                                <a href="javascript:;" class="btn btn-success btn-sm pull-right">保 存</a>
+                                <input type="submit" class="btn btn-success btn-sm pull-right" value="保 存">
                             </div>
                         </div>
                     </form>
@@ -160,9 +155,90 @@
         </div>
     </div>
 
+
+    <!-- 模板 -->
+    <script type='text/html' id="tpl">
+        <option value="">所属品牌</option>
+        {{each rows as val}}
+        <option value="{{val.id}}">{{val.brandName}}</option>
+        {{/each}}
+    </script>
+
     <script src="./assets/jquery/jquery.min.js"></script>
     <script src="./assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="./assets/nprogress/nprogress.js"></script>
+    <script src="./assets/art-template/template-web.js"></script>
+    <script src="./assets/jquery.form.js/jquery.form.min.js"></script>
     <script src="./js/common.js"></script>
+
+
+    <script>
+        // 1 上传商品的缩略图
+        $('#upfile').on('change', function() {
+            // 获取用户选择的文件信息
+            var file = this.files[0];
+
+            // 转换成 二进制
+            var data = new FormData();
+            data.append('pic1', file);
+            console.log(data);
+
+
+            // 通过 ajax 发送二进制数据
+            $.ajax({
+                url: '/api/product/addProductPic',
+                type: 'post',
+                data: data,
+                contentType: false,
+                processData: false,
+                success: function(info) {
+                    console.log(info)
+
+                    // 通过 img 显示图片
+                    $('.preview img').attr('src', '/api' + info.picAddr);
+
+                    // 将图片地址添加到表单中
+                    $('.thumb').val(info.picAddr);
+                }
+            })
+        })
+
+
+        // 2 取出所有的品牌
+        $.ajax({
+            url: '/api/category/querySecondCategoryPaging',
+            type: 'get',
+            data: {
+                page: 1,
+                pageSize: 100
+            },
+            success: function(info) {
+                console.log(info);
+                // 调用模板引擎
+                var html = template('tpl', info);
+                // 添加DOM
+                $('select').html(html);
+            }
+        });
+
+
+
+        // 3 提交表单
+        $('form').ajaxForm({
+            url: '/api/product/addProduct',
+            type: 'post',
+            beforeSubmit: function() {
+                // 置空 file 表单
+                $('#upfile').val('');
+            },
+            success: function(info) {
+                console.log(info);
+                if (info.success) {
+                    location.href = './goods_list.html';
+                }
+            }
+        });
+    </script>
 </body>
+
 </html>

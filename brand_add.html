@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>乐淘 - 后台管理</title>
@@ -8,8 +9,9 @@
     <link rel="stylesheet" href="./assets/nprogress/nprogress.css">
     <link rel="stylesheet" href="./css/index.css">
 </head>
+
 <body>
-    
+
     <!-- 侧边栏 -->
     <div class="aside">
         <!-- 个人资料 -->
@@ -25,20 +27,17 @@
             <ul class="list-unstyled">
                 <li>
                     <a href="./index.html">
-                        <i class="fa fa-dashboard"></i>
-                        仪表盘
+                        <i class="fa fa-dashboard"></i> 仪表盘
                     </a>
                 </li>
                 <li>
                     <a href="./user_list.html">
-                        <i class="fa fa-group"></i>
-                        用户管理
+                        <i class="fa fa-group"></i> 用户管理
                     </a>
                 </li>
                 <li>
                     <a href="javascript:;">
-                        <i class="fa fa-indent"></i>
-                        分类管理
+                        <i class="fa fa-indent"></i> 分类管理
                         <i class="arrow fa fa-angle-right"></i>
                     </a>
                     <ul class="list-unstyled show">
@@ -56,8 +55,7 @@
                 </li>
                 <li>
                     <a href="./goods_list.html">
-                        <i class="fa fa-cubes pull-left"></i>
-                        商品管理
+                        <i class="fa fa-cubes pull-left"></i> 商品管理
                     </a>
                 </li>
             </ul>
@@ -77,14 +75,12 @@
                     <ul class="nav navbar-nav navbar-right">
                         <li>
                             <a href="./settings.html">
-                                <i class="fa fa-user"></i>
-                                个人中心
+                                <i class="fa fa-user"></i> 个人中心
                             </a>
                         </li>
                         <li>
                             <a href="javascript:;">
-                                <i class="fa fa-sign-out"></i>
-                                退出
+                                <i class="fa fa-sign-out"></i> 退出
                             </a>
                         </li>
                         <li>
@@ -93,7 +89,7 @@
                             </a>
                         </li>
                     </ul>
-                </nav>          
+                </nav>
             </div>
             <div class="body category">
                 <!-- 面包屑 -->
@@ -109,8 +105,9 @@
                                 <img src="./images/default.png">
                                 <input type="file" id="upfile">
                                 <div class="cover">
-                                    <i class="fa fa-upload"></i>                  
+                                    <i class="fa fa-upload"></i>
                                 </div>
+                                <input type="hidden" name="brandLogo" class="logo">
                             </div>
                         </div>
                         <div class="form-group">
@@ -123,11 +120,7 @@
                             <label for="" class="col-xs-4 control-label">级别</label>
                             <div class="col-xs-2">
                                 <select name="" class="form-control input-sm">
-                                    <option value="">所属分类</option>
-                                    <option value="">前端开发</option>
-                                    <option value="">后端开发</option>
-                                    <option value="">数据库</option>
-                                    <option value="">视觉设计</option>
+                                    
                                 </select>
                             </div>
                         </div>
@@ -135,17 +128,18 @@
                             <label for="" class="col-xs-4 control-label">是否热门</label>
                             <div class="col-xs-3">
                                 <label class="checkbox-inline">
-                                    <input type="checkbox" checked> 是
+                                    
+                                    <input name="hot" value="1" type="radio" checked> 是
                                 </label>
                                 <label class="checkbox-inline">
-                                    <input type="checkbox"> 否
+                                        <input name="hot" value="0" type="radio"> 否
                                 </label>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-xs-8">
-                                <a href="javascript:;" class="btn btn-success btn-sm pull-right">保存</a>
-                            </div>                          
+                                <input type="submit" class="btn btn-success btn-sm pull-right" value="保 存">
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -153,9 +147,93 @@
         </div>
     </div>
 
+
+    <!-- 模板 -->
+    <script type="text/html" id="tpl">
+        <option value="">所属分类</option>
+        {{each rows as val}}
+        <option value="{{val.id}}">{{val.categoryName}}</option>
+        {{/each}}
+    </script>
+
     <script src="./assets/jquery/jquery.min.js"></script>
+    <script src="./assets/jquery.form.js/jquery.form.min.js"></script>
     <script src="./assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="./assets/nprogress/nprogress.js"></script>
+    <script src="./assets/art-template/template-web.js"></script>
     <script src="./js/common.js"></script>
+
+
+    <script>
+        $('#upfile').on('change', function() {
+
+            // console.log(this.files);
+            // 通过 this.files 获取用户选择的文件
+            var file = this.files[0];
+
+            // 上传文件必须要把文件转换成二进制
+            // 在HTML5中新增了 FormData 可以实现
+            // 二进制数据的转换
+
+            var data = new FormData();
+            data.append('pic1', file);
+
+            // 通过 ajax 将得到的二进制数据发送给服务端
+            $.ajax({
+                url: '/api/category/addSecondCategoryPic',
+                type: 'post',
+                data: data,
+                // 当使用 jQuery 传递 二进制数据时
+                // 需要一些额外的配置参数
+                contentType: false,
+                processData: false,
+                success: function(info) {
+                    console.log(info);
+                    // 通过 img 预览图片
+                    $('.preview img').attr('src', '/api' + info.picAddr);
+
+                    // 将图片路径存入一个隐藏表单
+                    $('.logo').val(info.picAddr);
+                }
+            });
+        })
+
+
+
+        // 取出所有的顶级分类
+        $.ajax({
+            url: '/api/category/queryTopCategoryPaging',
+            type: 'get',
+            data: {
+                page: 1,
+                pageSize: 100
+            },
+            success: function(info) {
+                console.log(info)
+                    // 调用模板引擎
+                var html = template('tpl', info);
+                // 添加DOM
+                $('select').html(html);
+            }
+        })
+
+
+        // 提交表单
+        $('form').ajaxForm({
+            url: '/api/category/addSecondCategory',
+            type: 'post',
+            beforeSubmit: function() {
+                // 置空文件表单
+                $('#upfile').val('');
+            },
+            success: function(info) {
+                console.log(info);
+                if (info.success) {
+                    location.href = './brand.html';
+                }
+            }
+        });
+    </script>
 </body>
+
 </html>
